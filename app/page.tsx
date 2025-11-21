@@ -1,25 +1,35 @@
-"use client";
-
-import dynamic from "next/dynamic";
-import { useMemo } from "react";
+import { readdirSync } from "fs";
 
 function Home() {
-  const MapWrapper = useMemo(
-    () =>
-      dynamic(() => import("@/components/prototypes/one/proto1"), {
-        loading: () => (
-          <div className="w-[50%] h-[50%] bg-neutral-700 flex items-center justify-center">
-            <p className="text-2xl">
-              <b>Loading...</b>
-            </p>
-          </div>
-        ),
-        ssr: false,
-      }),
-    [],
-  );
+  const ignored = [
+    'favicon.ico',
+    'globals.css',
+    'layout.tsx',
+    'page.tsx'
+  ];
+  const protoRoutes = readdirSync("./app").filter(name => !ignored.includes(name));
 
-  return <MapWrapper />;
+  return <>
+    <div className="h-full w-full">
+      <div className="sticky top-0 right-0 z-10 bg-blue-600 p-3 shadow-2xl">
+        <p className="text-2xl text-center text-white">Pick a prototype</p>
+      </div>
+
+      <div className="flex flex-col overflow-scroll text-center">
+        {
+          protoRoutes.map((name, idx) =>
+            <a key={idx} href={name}>
+              <p
+                className="bg-white hover:bg-neutral-100 p-3 border-b-2 border-neutral-200"
+              >
+                {name}
+              </p>
+            </a>
+          )
+        }
+      </div>
+    </div>
+  </>;
 }
 
 export default Home;
