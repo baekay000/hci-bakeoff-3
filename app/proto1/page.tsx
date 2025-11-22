@@ -6,10 +6,10 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useMemo } from "react";
 
-function OriginalPage() {
-  const Original = useMemo(
+function Proto1Page() {
+  const Proto1 = useMemo(
     () =>
-      dynamic(() => import("@/components/prototypes/original"), {
+      dynamic(() => import("@/components/prototypes/proto1"), {
         loading: () => (
           <></>
         ),
@@ -30,13 +30,13 @@ function OriginalPage() {
     return <Link href="/" className="p-3 bg-neutral-200 hover:bg-neutral-300 active:bg-neutral-300 rounded-2xl">Invalid DPI. Click here to return to home.</Link>;
   }
 
-  return (<Original dpi={dpi}/>);
+  return (<Proto1 dpi={dpi}/>);
 }
 
-function OriginalSus() {
+function Proto1Sus() {
   return <Suspense>
-    <OriginalPage />
+    <Proto1Page />
   </Suspense>
 }
 
-export default OriginalSus;
+export default Proto1Sus;
