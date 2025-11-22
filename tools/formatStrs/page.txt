@@ -4,9 +4,9 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useMemo } from "react";
+import { Suspense, useMemo } from "react";
 
-function Home() {
+function UPPER_PROTO_NAMEPage() {
   const UPPER_PROTO_NAME = useMemo(
     () =>
       dynamic(() => import("@/components/prototypes/LOWER_PROTO_NAME"), {
@@ -39,7 +39,13 @@ function Home() {
     return <Link href="/" className="p-3 bg-neutral-200 hover:bg-neutral-300 active:bg-neutral-300 rounded-2xl">Invalid DPI. Click here to return to home.</Link>;
   }
 
-  return <UPPER_PROTO_NAME dpi={dpi}/>;
+  return (<UPPER_PROTO_NAME dpi={dpi}/>);
 }
 
-export default Home;
+function UPPER_PROTO_NAMESus() {
+  return <Suspense>
+    <UPPER_PROTO_NAMEPage />
+  </Suspense>
+}
+
+export default UPPER_PROTO_NAMESus;
