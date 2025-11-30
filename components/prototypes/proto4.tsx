@@ -49,6 +49,8 @@ export default function Proto1(props: { dpi: number }) {
 
     p5.setup = () => {
       p5.createCanvas(window.innerWidth, window.innerHeight);
+      // default to left alignment for text rendering
+      p5.textAlign(p5.LEFT);
       p5.noStroke();
 
       // randomize phrases
@@ -135,23 +137,32 @@ export default function Proto1(props: { dpi: number }) {
       // ACTIVE TRIAL
       // ------------------------
       if (startTime != 0) {
+        // ensure left alignment and small text
         p5.textAlign(p5.LEFT);
         p5.fill(128);
+        p5.textSize(14);
+
         p5.text(
           "Phrase " + (currTrialNum + 1) + " of " + totalTrialNum,
           70,
           50
         );
+
+        // Target (smaller, left-aligned)
+        p5.fill(128);
+        p5.textSize(14);
         p5.text("Target:   " + currentPhrase, 70, 100);
 
         // Build display text
         let displayText = currentTyped;
         if (currentLetterPreview) displayText += currentLetterPreview;
 
-        // GREEN CURSOR (replaces old blue + removes start-line cursor)
+        // Entered (smaller, left-aligned)
         p5.fill(0);
-        p5.text("Entered:  " + displayText, 70, 140);
+        p5.textSize(14);
+        p5.text("Entered:  " + displayText + " ", 70, 140);
 
+        // CURSOR (green)
         let cursorX = 70 + p5.textWidth("Entered:  " + displayText);
         p5.stroke(0, 200, 0);
         p5.strokeWeight(3);
@@ -234,26 +245,44 @@ export default function Proto1(props: { dpi: number }) {
     };
 
     function handleKeyPress(keyIndex: number) {
-      let t = p5.millis();
-
-      if (keyIndex !== lastKeyIndex || t - lastTapTime > TAP_TIMEOUT) {
-        if (lastKeyIndex >= 0) commitLetter();
-        tapCount = 0;
+        const t = p5.millis();
+        const letters = keys[keyIndex];
+      
+        // ------------------------
+        // INSTANT BACKSPACE
+        // ------------------------
+        if (letters === "`") {
+          // delete immediately
+          currentTyped = currentTyped.slice(0, -1);
+      
+          // reset multi-tap state so it doesn’t interfere
+          lastKeyIndex = -1;
+          tapCount = 0;
+          currentLetterPreview = "";
+          lastTapTime = t;
+          return;
+        }
+      
+        // ------------------------
+        // NORMAL MULTI-TAP LOGIC
+        // ------------------------
+        if (keyIndex !== lastKeyIndex || t - lastTapTime > TAP_TIMEOUT) {
+          if (lastKeyIndex >= 0) commitLetter();
+          tapCount = 0;
+        }
+      
+        lastKeyIndex = keyIndex;
+        lastTapTime = t;
+        tapCount++;
+      
+        currentLetterPreview = letters[(tapCount - 1) % letters.length];
       }
-
-      lastKeyIndex = keyIndex;
-      lastTapTime = t;
-      tapCount++;
-
-      const letters = keys[keyIndex];
-      currentLetterPreview = letters[(tapCount - 1) % letters.length];
-    }
 
     function commitLetter() {
       if (lastKeyIndex < 0) return;
 
       const letters = keys[lastKeyIndex];
-      const letter = letters[(tapCount - 1) % letters.length];
+      const letter = letters[(tapCount - 1 + letters.length) % letters.length];
 
       if (letter === "_") currentTyped += " ";
       else if (letter === "`") currentTyped = currentTyped.slice(0, -1);
