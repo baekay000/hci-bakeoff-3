@@ -198,8 +198,6 @@ export default function Proto1(props: { dpi: number }) {
           else p5.fill(230);
 
           // draw outline
-          p5.stroke(0);
-          p5.strokeWeight(2);
           p5.rect(cx, cy, cellW, cellH);
 
           p5.noStroke();
